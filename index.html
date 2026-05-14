@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dev Portfolio — AI Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── TOKENS ────────────────────────────────────────────────── */
+    :root {
+      --bg: #050a0e;
+      --bg2: #0b1219;
+      --bg3: #101c26;
+      --surface: #0f1f2d;
+      --border: #1a3040;
+      --accent: #00e5ff;
+      --accent2: #39ff14;
+      --accent3: #ff2d6b;
+      --txt: #c8e6f5;
+      --txt-dim: #5a8099;
+      --txt-bright: #ffffff;
+      --card-glow: rgba(0,229,255,0.08);
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-display: 'Syne', sans-serif;
+      --radius: 4px;
+      --transition: 0.3s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="light"] {
+      --bg: #f0f4f8;
+      --bg2: #e2eaf2;
+      --bg3: #d4e0ec;
+      --surface: #ffffff;
+      --border: #b0c8dc;
+      --accent: #006ea8;
+      --accent2: #1a7f0e;
+      --accent3: #c9134d;
+      --txt: #1a2e3d;
+      --txt-dim: #5a7a8e;
+      --txt-bright: #050a0e;
+      --card-glow: rgba(0,110,168,0.07);
+    }
+
+    /* ── RESET ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--txt);
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background var(--transition), color var(--transition);
+      cursor: none;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; }
+    ::selection { background: var(--accent); color: #000; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 99px; }
+
+    /* ── CUSTOM CURSOR ─────────────────────────────────────────── */
+    #cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform .1s, opacity .2s, width .2s, height .2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      opacity: 0.5;
+      transition: transform .25s ease, width .2s, height .2s, opacity .2s;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* ── CANVAS BACKGROUND ─────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      transition: opacity var(--transition);
+    }
+    [data-theme="light"] #bg-canvas { opacity: 0.12; }
+
+    /* ── SCANLINES ─────────────────────────────────────────────── */
+    #scanlines {
+      position: fixed; inset: 0; z-index: 1;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+    }
+    [data-theme="light"] #scanlines { opacity: 0.3; }
+
+    /* ── LAYOUT ────────────────────────────────────────────────── */
+    .wrapper { position: relative; z-index: 2; }
+
+    /* ── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1rem, 5vw, 3rem);
+      height: 60px;
+      background: rgba(5,10,14,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    [data-theme="light"] nav {
+      background: rgba(240,244,248,0.88);
+    }
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: .9rem;
+      color: var(--accent);
+      letter-spacing: .05em;
+    }
+    .nav-logo span { color: var(--txt-dim); }
+    .nav-links {
+      display: flex; gap: 1.5rem; list-style: none;
+      font-size: .78rem; letter-spacing: .08em;
+    }
+    .nav-links a {
+      color: var(--txt-dim);
+      transition: color var(--transition);
+      text-transform: uppercase;
+    }
+    .nav-links a:hover { color: var(--accent); text-decoration: none; }
+    .nav-right { display: flex; align-items: center; gap: .8rem; }
+
+    /* Theme toggle */
+    .theme-btn {
+      background: none; border: 1px solid var(--border);
+      color: var(--txt); font-family: var(--font-mono); font-size: .75rem;
+      padding: .3rem .6rem; border-radius: var(--radius); cursor: none;
+      transition: all var(--transition); letter-spacing: .05em;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── HERO ──────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 6rem clamp(1.5rem, 8vw, 6rem) 4rem;
+    }
+    .hero-tag {
+      font-size: .75rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.2rem;
+      opacity: 0; animation: fadeUp .6s .2s forwards;
+    }
+    .hero-tag::before { content: '> '; color: var(--accent2); }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--txt-bright);
+      opacity: 0; animation: fadeUp .6s .35s forwards;
+    }
+    .hero h1 .accent { color: var(--accent); }
+    .hero h1 .dim { color: var(--txt-dim); }
+    .hero-sub {
+      margin-top: 1.2rem;
+      max-width: 560px;
+      font-size: .88rem;
+      color: var(--txt-dim);
+      opacity: 0; animation: fadeUp .6s .5s forwards;
+    }
+    .hero-cta {
+      display: flex; gap: 1rem; margin-top: 2.4rem; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp .6s .65s forwards;
+    }
+    .btn {
+      font-family: var(--font-mono); font-size: .8rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .7rem 1.4rem; border-radius: var(--radius);
+      cursor: none; transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-primary {
+      background: var(--accent); color: #000; border: none; font-weight: 700;
+    }
+    .btn-primary:hover { filter: brightness(1.15); text-decoration: none; transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent; color: var(--txt); border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; transform: translateY(-2px); }
+
+    /* Typewriter */
+    .typewriter-wrap { display: inline-block; }
+    #typewriter { color: var(--accent2); }
+    .cursor-blink {
+      display: inline-block; width: 2px; height: 1em;
+      background: var(--accent2); vertical-align: middle;
+      animation: blink .7s infinite;
+    }
+
+    /* Stack chips */
+    .stack-row {
+      display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 2rem;
+      opacity: 0; animation: fadeUp .6s .8s forwards;
+    }
+    .chip {
+      font-size: .68rem; letter-spacing: .05em; text-transform: uppercase;
+      padding: .2rem .6rem; border: 1px solid var(--border);
+      border-radius: 2px; color: var(--txt-dim);
+      transition: all var(--transition);
+    }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── SECTION SHARED ────────────────────────────────────────── */
+    section { padding: 6rem clamp(1.5rem, 8vw, 6rem); }
+    .section-label {
+      font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .5rem;
+    }
+    .section-label::before { content: '// '; color: var(--txt-dim); }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800; color: var(--txt-bright);
+      margin-bottom: 1rem;
+    }
+    .section-divider {
+      width: 48px; height: 2px; background: var(--accent);
+      margin-bottom: 3rem;
+    }
+
+    /* ── ABOUT ─────────────────────────────────────────────────── */
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: start;
+    }
+    @media(max-width:768px) { .about-grid { grid-template-columns: 1fr; } }
+    .about-text p { color: var(--txt); margin-bottom: 1rem; font-size: .9rem; }
+    .about-text p strong { color: var(--accent); }
+    .about-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+    .info-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      background: var(--surface);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .info-block:hover { border-color: var(--accent); box-shadow: 0 0 24px var(--card-glow); }
+    .info-block-label {
+      font-size: .68rem; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .6rem;
+    }
+    .info-block-label::before { content: '$ '; }
+    .interest-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .tag {
+      font-size: .72rem; padding: .2rem .55rem;
+      border: 1px solid var(--border); border-radius: 2px;
+      color: var(--txt-dim); transition: all var(--transition);
+    }
+    .tag:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* ── PROJECTS ──────────────────────────────────────────────── */
+    .projects-grid { display: grid; gap: 1.5rem; }
+    .project-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--accent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform var(--transition);
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover { border-color: var(--accent); box-shadow: 0 8px 40px var(--card-glow); transform: translateY(-3px); }
+    .project-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 1.5rem 1.5rem 0;
+    }
+    .project-num { font-size: .7rem; color: var(--accent); letter-spacing: .1em; }
+    .project-status {
+      font-size: .62rem; padding: .2rem .5rem;
+      border-radius: 2px; letter-spacing: .08em; text-transform: uppercase;
+    }
+    .status-wip { border: 1px solid var(--accent2); color: var(--accent2); }
+    .status-done { border: 1px solid var(--accent); color: var(--accent); }
+    .project-body { padding: 1rem 1.5rem 1.5rem; }
+    .project-title {
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+      color: var(--txt-bright); margin-bottom: .6rem;
+    }
+    .project-desc { font-size: .82rem; color: var(--txt-dim); margin-bottom: 1rem; }
+    .project-meta { display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.2rem; }
+    .meta-row { display: flex; gap: .5rem; align-items: flex-start; font-size: .78rem; }
+    .meta-key {
+      min-width: 90px; color: var(--accent); flex-shrink: 0;
+    }
+    .meta-key::after { content: ':'; }
+    .meta-val { color: var(--txt-dim); }
+    .metric-pills { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .metric-pill {
+      font-size: .68rem; padding: .15rem .5rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 2px; color: var(--accent2);
+    }
+    .project-links { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .link-btn {
+      font-family: var(--font-mono); font-size: .72rem;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: .4rem .8rem; border-radius: var(--radius);
+      transition: all var(--transition); cursor: none;
+    }
+    .link-btn-code { border: 1px solid var(--border); color: var(--txt-dim); }
+    .link-btn-code:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    .link-btn-demo { background: var(--accent); color: #000; border: none; font-weight: 700; }
+    .link-btn-demo:hover { filter: brightness(1.1); text-decoration: none; }
+
+    /* ── ARTICLES ──────────────────────────────────────────────── */
+    .articles-list { display: grid; gap: 1px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .article-item {
+      display: flex; align-items: center; gap: 1.5rem;
+      padding: 1.2rem 1.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      transition: all var(--transition);
+      cursor: none;
+      position: relative; overflow: hidden;
+    }
+    .article-item::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+      opacity: 0; transform: translateX(-100%);
+      transition: all .4s;
+    }
+    .article-item:hover::after { opacity: 0.04; transform: translateX(0); }
+    .article-item:last-child { border-bottom: none; }
+    .article-item:hover { background: var(--bg3); }
+    .article-num { font-size: .65rem; color: var(--txt-dim); min-width: 30px; flex-shrink: 0; }
+    .article-content { flex: 1; }
+    .article-title { font-size: .9rem; color: var(--txt-bright); font-weight: 600; margin-bottom: .2rem; transition: color var(--transition); }
+    .article-item:hover .article-title { color: var(--accent); }
+    .article-meta { font-size: .72rem; color: var(--txt-dim); display: flex; gap: 1rem; }
+    .article-tag-inline {
+      font-size: .62rem; padding: .1rem .4rem;
+      border: 1px solid var(--border); border-radius: 2px; color: var(--txt-dim);
+    }
+    .article-arrow { color: var(--txt-dim); transition: all var(--transition); font-size: .85rem; }
+    .article-item:hover .article-arrow { color: var(--accent); transform: translateX(4px); }
+
+    /* ── VIDEOS ────────────────────────────────────────────────── */
+    .video-intro { font-size: .85rem; color: var(--txt-dim); max-width: 600px; margin-bottom: 2.5rem; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; }
+    .video-card {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); overflow: hidden;
+      transition: all var(--transition);
+    }
+    .video-card:hover { border-color: var(--accent); box-shadow: 0 8px 40px var(--card-glow); transform: translateY(-3px); }
+    .video-embed-wrap {
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+      background: var(--bg3);
+    }
+    .video-embed-wrap iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      border: none;
+    }
+    .video-placeholder {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: var(--bg3); gap: .8rem; cursor: none;
+    }
+    .play-icon {
+      width: 56px; height: 56px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: #000; transition: transform var(--transition);
+    }
+    .video-placeholder:hover .play-icon { transform: scale(1.1); }
+    .placeholder-label { font-size: .75rem; color: var(--txt-dim); letter-spacing: .1em; }
+    .add-video-form-label { font-size: .72rem; color: var(--txt-dim); }
+    .video-info { padding: 1rem; }
+    .video-title { font-size: .88rem; font-weight: 700; color: var(--txt-bright); margin-bottom: .3rem; }
+    .video-desc-small { font-size: .74rem; color: var(--txt-dim); }
+
+    /* Add Video Card */
+    .add-video-card {
+      border: 1px dashed var(--border); border-radius: var(--radius);
+      background: var(--bg2); display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 240px; gap: 1rem; padding: 2rem;
+      transition: border-color var(--transition);
+      cursor: none;
+    }
+    .add-video-card:hover { border-color: var(--accent); }
+    .add-video-form { display: flex; flex-direction: column; gap: .6rem; width: 100%; max-width: 320px; }
+    .add-video-form input {
+      font-family: var(--font-mono); font-size: .78rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--txt); padding: .5rem .8rem; border-radius: var(--radius);
+      transition: border-color var(--transition); outline: none;
+      cursor: none;
+    }
+    .add-video-form input:focus { border-color: var(--accent); }
+    .add-video-form input::placeholder { color: var(--txt-dim); }
+    .add-video-form .btn { align-self: flex-start; }
+
+    /* ── CONTACT ───────────────────────────────────────────────── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    @media(max-width:768px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-text { font-size: .88rem; color: var(--txt-dim); margin-bottom: 1.5rem; }
+    .social-links { display: flex; flex-direction: column; gap: .6rem; }
+    .social-link {
+      display: flex; align-items: center; gap: .8rem;
+      font-size: .82rem; color: var(--txt-dim);
+      padding: .7rem 1rem; border: 1px solid var(--border);
+      border-radius: var(--radius); transition: all var(--transition);
+      cursor: none;
+    }
+    .social-link:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; background: var(--card-glow); }
+    .social-icon { font-size: 1rem; }
+    .terminal-block {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .terminal-bar {
+      display: flex; align-items: center; gap: .4rem;
+      padding: .5rem .8rem; background: var(--bg3); border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #28ca41; }
+    .terminal-body { padding: 1.2rem; font-size: .8rem; color: var(--txt-dim); line-height: 2; }
+    .terminal-body .t-cmd { color: var(--accent2); }
+    .terminal-body .t-out { color: var(--txt); }
+    .terminal-body .t-acc { color: var(--accent); }
+
+    /* ── FOOTER ────────────────────────────────────────────────── */
+    footer {
+      padding: 2rem clamp(1.5rem, 8vw, 6rem);
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: .72rem; color: var(--txt-dim); flex-wrap: wrap; gap: 1rem;
+    }
+
+    /* ── ANIMATIONS ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    @keyframes float {
+      0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)}
+    }
+    @keyframes glitch-1 {
+      0%,90%,100%{clip-path:inset(0 0 100% 0)}
+      92%{clip-path:inset(10% 0 60% 0); transform:translate(-3px)}
+      94%{clip-path:inset(50% 0 30% 0); transform:translate(3px)}
+      96%{clip-path:inset(5% 0 80% 0); transform:translate(-3px)}
+    }
+    .glitch {
+      position: relative;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      font-family: inherit; font-size: inherit; font-weight: inherit;
+    }
+    .glitch::before { color: var(--accent3); animation: glitch-1 4s infinite; }
+    .glitch::after  { color: var(--accent2); animation: glitch-1 4s .15s infinite; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .6s; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Noise overlay */
+    .noise {
+      position: fixed; inset: 0; z-index: 1;
+      opacity: .025; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Mobile nav */
+    @media(max-width:600px) {
+      .nav-links { display: none; }
+    }
+
+    /* Grid lines BG */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: -1;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: .25;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+    .hero { position: relative; overflow: hidden; }
+  </style>
+</head>
+<body>
+
+<!-- ── Cursor ── -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── BG Canvas ── -->
+<canvas id="bg-canvas"></canvas>
+<div id="scanlines"></div>
+<div class="noise"></div>
+
+<div class="wrapper">
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo"><span>//</span> dev.portfolio</div>
+  <ul class="nav-links">
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#projects">Projetos</a></li>
+    <li><a href="#articles">Artigos</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#contact">Contato</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">☀ Light</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="home">
+  <p class="hero-tag">AI Engineer & Developer</p>
+  <h1 class="glitch" data-text="Gean De Araújo">
+    Gean <span class="accent">De Araújo</span><br/>
+    <span class="dim">Aqui.</span>
+  </h1>
+  <p class="hero-sub">
+    Desenvolvedor especializado em <strong style="color:var(--accent)">Inteligência Artificial</strong>.
+    Construindo soluções com LLMs, Visão Computacional e sistemas de ML de ponta a ponta.
+    <br/><span style="color:var(--txt-dim)">// <span class="typewriter-wrap"><span id="typewriter"></span><span class="cursor-blink"></span></span></span>
+  </p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">→ Ver Projetos</a>
+    <a href="#contact" class="btn btn-outline">↗ Contato</a>
+  </div>
+  <div class="stack-row">
+    <span class="chip">Python</span>
+    <span class="chip">PyTorch</span>
+    <span class="chip">LangChain</span>
+    <span class="chip">HuggingFace</span>
+    <span class="chip">Scikit-Learn</span>
+    <span class="chip">FastAPI</span>
+    <span class="chip">Docker</span>
+    <span class="chip">LLM Fine-tuning</span>
+    <span class="chip">RAG</span>
+    <span class="chip">Transformers</span>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <p class="section-label reveal">sobre mim</p>
+  <h2 class="section-title reveal">Quem sou eu</h2>
+  <div class="section-divider reveal"></div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        Olá! Sou um engenheiro de IA apaixonado por resolver problemas reais através de modelos de machine learning.
+        Minha jornada começou com <strong>visão computacional</strong> e evoluiu para o mundo dos <strong>Large Language Models</strong>
+        e sistemas de recuperação aumentada (RAG).
+      </p>
+      <p>
+        Acredito que a melhor IA é aquela que resolve um problema concreto com dados reais. Por isso, foco tanto na 
+        engenharia de dados e feature engineering quanto na modelagem em si — porque um bom modelo começa muito antes 
+        do <code style="color:var(--accent2)">model.fit()</code>.
+      </p>
+      <p>
+        Atualmente estou explorando <strong>fine-tuning de LLMs open-source</strong> como Llama 3 e Mistral,
+        bem como técnicas avançadas de <strong>RAG</strong> para aplicações empresariais.
+        Compartilho tudo que aprendo aqui no site e no meu canal do YouTube.
+      </p>
+      <p>
+        Quando não estou escrevendo código, estou escrevendo artigos para fixar o que aprendi —
+        a Técnica de Feynman é minha aliada favorita.
+      </p>
+    </div>
+    <div class="about-sidebar reveal">
+      <div class="info-block">
+        <p class="info-block-label">áreas de interesse</p>
+        <div class="interest-tags">
+          <span class="tag">LLMs</span>
+          <span class="tag">Visão Computacional</span>
+          <span class="tag">NLP</span>
+          <span class="tag">RAG</span>
+          <span class="tag">Fine-tuning</span>
+          <span class="tag">Rec. Systems</span>
+          <span class="tag">MLOps</span>
+          <span class="tag">Transformers</span>
+        </div>
+      </div>
+      <div class="info-block">
+        <p class="info-block-label">stack principal</p>
+        <div class="interest-tags">
+          <span class="tag">Python</span>
+          <span class="tag">PyTorch</span>
+          <span class="tag">LangChain</span>
+          <span class="tag">Scikit-Learn</span>
+          <span class="tag">HuggingFace</span>
+          <span class="tag">FastAPI</span>
+          <span class="tag">Pandas</span>
+          <span class="tag">NumPy</span>
+          <span class="tag">Docker</span>
+          <span class="tag">SQL</span>
+        </div>
+      </div>
+      <div class="info-block">
+        <p class="info-block-label">localização</p>
+        <p style="font-size:.82rem;color:var(--txt-dim)">Brasil 🇧🇷 — disponível para projetos remotos</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects">
+  <p class="section-label reveal">projetos</p>
+  <h2 class="section-title reveal">O que estou construindo</h2>
+  <div class="section-divider reveal"></div>
+  <div class="projects-grid">
+
+    <!-- PROJECT 1 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <span class="project-num">projeto_001</span>
+        <span class="project-status status-wip">Em andamento</span>
+      </div>
+      <div class="project-body">
+        <h3 class="project-title">RAG Pipeline para Documentos Jurídicos</h3>
+        <p class="project-desc">Sistema de perguntas e respostas sobre contratos e documentos legais usando LLMs open-source com recuperação contextual.</p>
+        <div class="project-meta">
+          <div class="meta-row">
+            <span class="meta-key">Problema</span>
+            <span class="meta-val">Profissionais perdem horas buscando cláusulas em contratos extensos. Automatizar a busca semântica.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Dados</span>
+            <span class="meta-val">PDFs de contratos públicos. Pré-processamento com PyMuPDF + chunking semântico com sentence-transformers.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Abordagem</span>
+            <span class="meta-val">RAG com Mistral 7B + FAISS vector store + LangChain. Reranking com cross-encoder.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Métricas</span>
+            <span class="meta-val">
+              <div class="metric-pills">
+                <span class="metric-pill">MRR@5: 0.87</span>
+                <span class="metric-pill">Latência: ~1.2s</span>
+                <span class="metric-pill">Fidelidade: 91%</span>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="#" class="link-btn link-btn-code">↗ GitHub</a>
+          <a href="#" class="link-btn link-btn-demo">▶ Demo (HF Spaces)</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT 2 -->
+    <div class="project-card reveal">
+      <div class="project-header">
+        <span class="project-num">projeto_002</span>
+        <span class="project-status status-done">Concluído</span>
+      </div>
+      <div class="project-body">
+        <h3 class="project-title">Classificador de Sentimentos para E-commerce</h3>
+        <p class="project-desc">Pipeline de NLP para análise de sentimentos em avaliações de produtos com fine-tuning de BERT em português.</p>
+        <div class="project-meta">
+          <div class="meta-row">
+            <span class="meta-key">Problema</span>
+            <span class="meta-val">Empresa precisava monitorar satisfação de clientes em escala a partir de reviews textuais.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Dados</span>
+            <span class="meta-val">50k reviews do Mercado Livre. Balanceamento de classes com oversampling + limpeza com regex e spaCy.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Abordagem</span>
+            <span class="meta-val">Fine-tuning do BERTimbau (BERT-pt) com 3 epochs, lr=2e-5. Comparado com TF-IDF + SVM como baseline.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Métricas</span>
+            <span class="meta-val">
+              <div class="metric-pills">
+                <span class="metric-pill">F1: 0.923</span>
+                <span class="metric-pill">Accuracy: 94.1%</span>
+                <span class="metric-pill">+12% vs baseline</span>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="#" class="link-btn link-btn-code">↗ GitHub</a>
+          <a href="#" class="link-btn link-btn-demo">▶ Demo (Gradio)</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT 3 — Template -->
+    <div class="project-card reveal" style="border-style:dashed;opacity:.6">
+      <div class="project-header">
+        <span class="project-num">projeto_003</span>
+        <span class="project-status status-wip">Em breve</span>
+      </div>
+      <div class="project-body">
+        <h3 class="project-title">Adicione seu próximo projeto aqui</h3>
+        <p class="project-desc">Descreva o problema que você resolveu, os dados que usou, a abordagem de modelagem e os resultados com métricas concretas.</p>
+        <div class="project-meta">
+          <div class="meta-row"><span class="meta-key">Problema</span><span class="meta-val" style="font-style:italic;color:var(--txt-dim)">O que você tentou resolver?</span></div>
+          <div class="meta-row"><span class="meta-key">Dados</span><span class="meta-val" style="font-style:italic;color:var(--txt-dim)">De onde vieram? Como tratou?</span></div>
+          <div class="meta-row"><span class="meta-key">Abordagem</span><span class="meta-val" style="font-style:italic;color:var(--txt-dim)">Qual modelo e por quê?</span></div>
+          <div class="meta-row"><span class="meta-key">Métricas</span><span class="meta-val" style="font-style:italic;color:var(--txt-dim)">Acurácia, F1, latência...</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ARTICLES ── -->
+<section id="articles">
+  <p class="section-label reveal">artigos & blog</p>
+  <h2 class="section-title reveal">Escrevendo para aprender</h2>
+  <div class="section-divider reveal"></div>
+  <p class="reveal" style="font-size:.85rem;color:var(--txt-dim);max-width:560px;margin-bottom:2rem;">
+    Uso a Técnica de Feynman: se não consigo explicar com palavras simples, ainda não entendi.
+    Cada artigo é uma prova de conceito do meu aprendizado.
+  </p>
+  <div class="articles-list reveal">
+
+    <a href="#" class="article-item">
+      <span class="article-num">01</span>
+      <div class="article-content">
+        <div class="article-title">Como funciona o mecanismo de Attention em Transformers</div>
+        <div class="article-meta">
+          <span>Mai 2025</span>
+          <span class="article-tag-inline">Transformers</span>
+          <span class="article-tag-inline">Fundamentos</span>
+        </div>
+      </div>
+      <span class="article-arrow">→</span>
+    </a>
+
+    <a href="#" class="article-item">
+      <span class="article-num">02</span>
+      <div class="article-content">
+        <div class="article-title">RAG Avançado: Técnicas além do naive chunking</div>
+        <div class="article-meta">
+          <span>Abr 2025</span>
+          <span class="article-tag-inline">RAG</span>
+          <span class="article-tag-inline">LLMs</span>
+        </div>
+      </div>
+      <span class="article-arrow">→</span>
+    </a>
+
+    <a href="#" class="article-item">
+      <span class="article-num">03</span>
+      <div class="article-content">
+        <div class="article-title">Fine-tuning vs. In-context Learning: quando usar cada um?</div>
+        <div class="article-meta">
+          <span>Mar 2025</span>
+          <span class="article-tag-inline">Fine-tuning</span>
+          <span class="article-tag-inline">LLMs</span>
+        </div>
+      </div>
+      <span class="article-arrow">→</span>
+    </a>
+
+    <a href="#" class="article-item">
+      <span class="article-num">04</span>
+      <div class="article-content">
+        <div class="article-title">Feature Engineering para dados tabulares em ML</div>
+        <div class="article-meta">
+          <span>Fev 2025</span>
+          <span class="article-tag-inline">ML</span>
+          <span class="article-tag-inline">Feature Eng.</span>
+        </div>
+      </div>
+      <span class="article-arrow">→</span>
+    </a>
+
+    <a href="#" class="article-item" style="border-style:dashed;opacity:.5">
+      <span class="article-num">+</span>
+      <div class="article-content">
+        <div class="article-title" style="font-style:italic;color:var(--txt-dim)">Adicione seu próximo artigo aqui...</div>
+        <div class="article-meta"><span>Em breve</span></div>
+      </div>
+      <span class="article-arrow">→</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- ── VIDEOS ── -->
+<section id="videos">
+  <p class="section-label reveal">canal youtube</p>
+  <h2 class="section-title reveal">Vídeos & Aulas</h2>
+  <div class="section-divider reveal"></div>
+  <p class="video-intro reveal">
+    Cole o ID de um vídeo não-listado do YouTube para embedar aqui. O ID está na URL depois de <code style="color:var(--accent2)">?v=</code>.
+    Exemplo: youtube.com/watch?v=<strong style="color:var(--accent)">dQw4w9WgXcQ</strong>
+  </p>
+  <div class="video-grid" id="videoGrid">
+
+    <!-- Video 1: substitua VIDEO_ID_AQUI pelo ID real -->
+    <div class="video-card reveal">
+      <div class="video-embed-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/VIDEO_ID_AQUI?rel=0&modestbranding=1"
+          title="Título do Vídeo 1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <div class="video-info">
+        <p class="video-title">Título do Vídeo 1</p>
+        <p class="video-desc-small">Substitua VIDEO_ID_AQUI pelo ID real do seu vídeo não-listado</p>
+      </div>
+    </div>
+
+    <!-- Video 2 -->
+    <div class="video-card reveal">
+      <div class="video-embed-wrap">
+        <iframe
+          src="https://www.youtube.com/embed/VIDEO_ID_2?rel=0&modestbranding=1"
+          title="Título do Vídeo 2"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+      <div class="video-info">
+        <p class="video-title">Título do Vídeo 2</p>
+        <p class="video-desc-small">Aula ou apresentação de projeto</p>
+      </div>
+    </div>
+
+    <!-- Add Video Card -->
+    <div class="add-video-card reveal" id="addVideoCard">
+      <p class="add-video-form-label">+ Adicionar vídeo não-listado</p>
+      <div class="add-video-form">
+        <input type="text" id="videoId" placeholder="ID do vídeo (ex: dQw4w9WgXcQ)" />
+        <input type="text" id="videoTitle" placeholder="Título do vídeo" />
+        <input type="text" id="videoDesc" placeholder="Descrição curta" />
+        <button class="btn btn-primary" onclick="addVideo()">Embedar vídeo</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <p class="section-label reveal">contato</p>
+  <h2 class="section-title reveal">Vamos conversar</h2>
+  <div class="section-divider reveal"></div>
+  <div class="contact-grid">
+    <div class="reveal">
+      <p class="contact-text">
+        Estou aberto a colaborações, oportunidades de trabalho e conversas sobre IA.
+        Se você tem um projeto interessante ou quer trocar ideias, me chama.
+      </p>
+      <div class="social-links">
+        <a href="https://github.com/GeanDeAraujo" class="social-link" target="_blank">
+          <span class="social-icon">⌥</span> github.com/GeanDeAraujo
+        </a>
+        <a href="https://linkedin.com/in/geandearaujo" class="social-link" target="_blank">
+          <span class="social-icon">◈</span> linkedin.com/in/geandearaujo
+        </a>
+        <a href="https://youtube.com/@dearaujogean" class="social-link" target="_blank">
+          <span class="social-icon">▶</span> youtube.com/@dearaujogean
+        </a>
+        <a href="mailto:geanjfa@gmail.com" class="social-link">
+          <span class="social-icon">✉</span> geanjfa@gmail.com
+        </a>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="terminal-block">
+        <div class="terminal-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span style="font-size:.7rem;color:var(--txt-dim);margin-left:.4rem">bash — ~/portfolio</span>
+        </div>
+        <div class="terminal-body">
+          <p><span class="t-cmd">$</span> cat about.json</p>
+          <p class="t-out">{</p>
+          <p class="t-out">&nbsp;&nbsp;"nome": "<span class="t-acc">Gean de Araújo</span>",</p>
+          <p class="t-out">&nbsp;&nbsp;"role": "<span class="t-acc">AI Engineer</span>",</p>
+          <p class="t-out">&nbsp;&nbsp;"local": "<span class="t-acc">Brasil 🇧🇷</span>",</p>
+          <p class="t-out">&nbsp;&nbsp;"disponivel": <span class="t-acc" style="color:var(--accent2)">true</span></p>
+          <p class="t-out">}</p>
+          <p style="margin-top:.6rem"><span class="t-cmd">$</span> <span class="cursor-blink" style="width:8px;height:.9em"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <span>// <span style="color:var(--accent)">dev.portfolio</span> — construído com HTML puro & obsessão por detalhes</span>
+  <span style="color:var(--txt-dim)">MIT License · <span id="year"></span></span>
+</footer>
+
+</div><!-- /wrapper -->
+
+<script>
+/* ── CURSOR ── */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * 0.18;
+  ry += (my - ry) * 0.18;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a, button, .social-link, .article-item, .project-card, .chip, .tag, .add-video-card, input').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2.5)'; ring.style.opacity = '0'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; ring.style.opacity = '0.5'; });
+});
+
+/* ── THEME ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('themeToggle').textContent = isDark ? '☾ Dark' : '☀ Light';
+}
+
+/* ── TYPEWRITER ── */
+const phrases = [
+  'Construindo LLMs do zero.',
+  'Fine-tuning de modelos open-source.',
+  'Transformando dados em soluções.',
+  'RAG pipelines de produção.',
+  'Visão Computacional aplicada.',
+];
+let pi = 0, ci = 0, del = false;
+const tw = document.getElementById('typewriter');
+function typeLoop() {
+  const phrase = phrases[pi];
+  if (!del) {
+    tw.textContent = phrase.slice(0, ++ci);
+    if (ci === phrase.length) { del = true; setTimeout(typeLoop, 1800); return; }
+  } else {
+    tw.textContent = phrase.slice(0, --ci);
+    if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(typeLoop, del ? 40 : 70);
+}
+typeLoop();
+
+/* ── CANVAS PARTICLES ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor() { this.reset(true); }
+  reset(init) {
+    this.x = Math.random() * W;
+    this.y = init ? Math.random() * H : H + 10;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = -(Math.random() * 0.5 + 0.2);
+    this.alpha = 0;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.targetAlpha = Math.random() * 0.6 + 0.2;
+    this.char = Math.random() > 0.7 ? String.fromCharCode(0x30A0 + Math.random() * 96 | 0) : (Math.random() > 0.5 ? '1' : '0');
+    this.isChar = Math.random() > 0.6;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.alpha = Math.min(this.alpha + 0.01, this.targetAlpha);
+    if (this.y < -20) this.reset(false);
+  }
+  draw() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    const color = theme === 'light' ? `rgba(0,110,168,${this.alpha})` : `rgba(0,229,255,${this.alpha})`;
+    if (this.isChar) {
+      ctx.font = `${this.size * 8}px JetBrains Mono, monospace`;
+      ctx.fillStyle = color;
+      ctx.fillText(this.char, this.x, this.y);
+    } else {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  }
+}
+
+for (let i = 0; i < 120; i++) particles.push(new Particle());
+
+function animCanvas() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => { p.update(); p.draw(); });
+  // Draw connecting lines
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 80) {
+        const theme = document.documentElement.getAttribute('data-theme');
+        const a = (1 - dist / 80) * 0.08;
+        ctx.strokeStyle = theme === 'light' ? `rgba(0,110,168,${a})` : `rgba(0,229,255,${a})`;
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animCanvas);
+}
+animCanvas();
+
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el => observer.observe(el));
+
+/* ── ADD VIDEO ── */
+function addVideo() {
+  const id = document.getElementById('videoId').value.trim();
+  const title = document.getElementById('videoTitle').value.trim() || 'Vídeo sem título';
+  const desc = document.getElementById('videoDesc').value.trim() || 'Vídeo do canal';
+  if (!id) { alert('Cole o ID do vídeo!'); return; }
+  const card = document.createElement('div');
+  card.className = 'video-card';
+  card.style.animation = 'fadeUp .4s forwards';
+  card.innerHTML = `
+    <div class="video-embed-wrap">
+      <iframe
+        src="https://www.youtube.com/embed/${id}?rel=0&modestbranding=1"
+        title="${title}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <div class="video-info">
+      <p class="video-title">${title}</p>
+      <p class="video-desc-small">${desc}</p>
+    </div>
+  `;
+  const addCard = document.getElementById('addVideoCard');
+  document.getElementById('videoGrid').insertBefore(card, addCard);
+  document.getElementById('videoId').value = '';
+  document.getElementById('videoTitle').value = '';
+  document.getElementById('videoDesc').value = '';
+}
+
+/* ── YEAR ── */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ── GLITCH OCCASIONAL ── */
+setInterval(() => {
+  const h1 = document.querySelector('.hero h1');
+  if (!h1) return;
+  h1.style.animation = 'none';
+  setTimeout(() => h1.style.animation = '', 10);
+}, 7000);
+</script>
+</body>
+</html>
