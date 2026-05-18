@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: GeanDeAraujo/geandearaujo.github.io
+  repo: geandearaujo/geandearaujo.github.io
   branch: main
 
 media_folder: "public/assets/images"
