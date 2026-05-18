@@ -1,40 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dev Portfolio — AI Engineer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
 
-  <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
+const articles = await getCollection('articles');
+// Sort by date desc
+articles.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
 
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-
-<canvas id="bg-canvas"></canvas>
-<div id="scanlines"></div>
-<div class="noise"></div>
-
-<div class="wrapper">
-
-<nav>
-  <div class="nav-logo"><span>//</span> dev.portfolio</div>
-  <ul class="nav-links">
-    <li><a href="#about">Sobre</a></li>
-    <li><a href="#projects">Projetos</a></li>
-    <li><a href="#articles">Artigos</a></li>
-    <li><a href="#videos">Videos</a></li>
-    <li><a href="#contact">Contato</a></li>
-  </ul>
-  <div class="nav-right">
-    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">☀ Light</button>
-  </div>
-</nav>
-
+<Layout title="Dev Portfolio — AI Engineer">
 <section class="hero" id="home">
   <p class="hero-tag">AI Engineer & Developer</p>
   <h1 class="glitch" data-text="Gean De Araújo">
@@ -243,69 +216,22 @@
     Cada artigo é uma prova de conceito do meu aprendizado.
   </p>
   <div class="articles-list reveal">
-
-    <a href="#" class="article-item">
-      <span class="article-num">01</span>
-      <div class="article-content">
-        <div class="article-title">Como funciona o mecanismo de Attention em Transformers</div>
-        <div class="article-meta">
-          <span>Mai 2025</span>
-          <span class="article-tag-inline">Transformers</span>
-          <span class="article-tag-inline">Fundamentos</span>
+    {articles.map((article, index) => (
+      <a href={`/articles/${article.id}`} class="article-item">
+        <span class="article-num">{String(index + 1).padStart(2, '0')}</span>
+        <div class="article-content">
+          <div class="article-title">{article.data.title}</div>
+          <div class="article-meta">
+            <span>{article.data.date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '')}</span>
+            {article.data.tags.map((tag) => (
+              <span class="article-tag-inline">{tag}</span>
+            ))}
+          </div>
         </div>
-      </div>
-      <span class="article-arrow">→</span>
-    </a>
-
-    <a href="#" class="article-item">
-      <span class="article-num">02</span>
-      <div class="article-content">
-        <div class="article-title">RAG Avançado: Técnicas além do naive chunking</div>
-        <div class="article-meta">
-          <span>Abr 2025</span>
-          <span class="article-tag-inline">RAG</span>
-          <span class="article-tag-inline">LLMs</span>
-        </div>
-      </div>
-      <span class="article-arrow">→</span>
-    </a>
-
-    <a href="#" class="article-item">
-      <span class="article-num">03</span>
-      <div class="article-content">
-        <div class="article-title">Fine-tuning vs. In-context Learning: quando usar cada um?</div>
-        <div class="article-meta">
-          <span>Mar 2025</span>
-          <span class="article-tag-inline">Fine-tuning</span>
-          <span class="article-tag-inline">LLMs</span>
-        </div>
-      </div>
-      <span class="article-arrow">→</span>
-    </a>
-
-    <a href="#" class="article-item">
-      <span class="article-num">04</span>
-      <div class="article-content">
-        <div class="article-title">Feature Engineering para dados tabulares em ML</div>
-        <div class="article-meta">
-          <span>Fev 2025</span>
-          <span class="article-tag-inline">ML</span>
-          <span class="article-tag-inline">Feature Eng.</span>
-        </div>
-      </div>
-      <span class="article-arrow">→</span>
-    </a>
-
-    <a href="#" class="article-item" style="border-style:dashed;opacity:.5">
-      <span class="article-num">+</span>
-      <div class="article-content">
-        <div class="article-title" style="font-style:italic;color:var(--txt-dim)">Adicione seu próximo artigo aqui...</div>
-        <div class="article-meta"><span>Em breve</span></div>
-      </div>
-      <span class="article-arrow">→</span>
-    </a>
-
-  </div>
+        <span class="article-arrow">→</span>
+      </a>
+    ))}
+</div>
 </section>
 
 <section id="videos">
@@ -408,11 +334,5 @@
   </div>
 </section>
 
-<footer>
-  <span>// <span style="color:var(--accent)">dev.portfolio</span> — construído com HTML puro & obsessão por detalhes</span>
-  <span style="color:var(--txt-dim)">MIT License · <span id="year"></span></span>
-</footer>
 
-</div><script src="assets/js/main.js"></script>
-</body>
-</html>
+</Layout>

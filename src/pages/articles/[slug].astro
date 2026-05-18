@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={`${entry.data.title} — Dev Portfolio`}>
+  <section class="hero" style="min-height: auto; padding-top: 8rem; padding-bottom: 2rem;">
+    <a href="/#articles" style="font-size: .8rem; color: var(--txt-dim); margin-bottom: 2rem; display: inline-block;">← Voltar para Artigos</a>
+    <p class="hero-tag">{entry.data.date.toLocaleDateString('pt-BR')}</p>
+    <h1 style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem; color: var(--txt-bright); font-family: var(--font-display); font-weight: 800;">
+      {entry.data.title}
+    </h1>
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 2rem;">
+      {entry.data.tags.map((tag: string) => (
+        <span class="chip">{tag}</span>
+      ))}
+    </div>
+  </section>
+
+  <section style="padding-top: 0;">
+    <div style="max-width: 800px; line-height: 1.8; color: var(--txt); font-size: .95rem;">
+      <Content />
+    </div>
+  </section>
+</Layout>

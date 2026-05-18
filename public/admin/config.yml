@@ -1,0 +1,20 @@
+backend:
+  name: github
+  repo: GeanDeAraujo/geandearaujo.github.io
+  branch: main
+
+media_folder: "public/assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "articles"
+    label: "Artigos"
+    folder: "src/content/articles"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Título", name: "title", widget: "string"}
+      - {label: "Data", name: "date", widget: "datetime"}
+      - {label: "Tags", name: "tags", widget: "list"}
+      - {label: "Descrição", name: "description", widget: "text", required: false}
+      - {label: "Corpo", name: "body", widget: "markdown"}
