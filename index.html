@@ -520,18 +520,15 @@
 </head>
 <body>
 
-<!-- ── Cursor ── -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- ── BG Canvas ── -->
 <canvas id="bg-canvas"></canvas>
 <div id="scanlines"></div>
 <div class="noise"></div>
 
 <div class="wrapper">
 
-<!-- ── NAV ── -->
 <nav>
   <div class="nav-logo"><span>//</span> dev.portfolio</div>
   <ul class="nav-links">
@@ -546,7 +543,6 @@
   </div>
 </nav>
 
-<!-- ── HERO ── -->
 <section class="hero" id="home">
   <p class="hero-tag">AI Engineer & Developer</p>
   <h1 class="glitch" data-text="Gean De Araújo">
@@ -576,7 +572,6 @@
   </div>
 </section>
 
-<!-- ── ABOUT ── -->
 <section id="about">
   <p class="section-label reveal">sobre mim</p>
   <h2 class="section-title reveal">Quem sou eu</h2>
@@ -640,17 +635,57 @@
   </div>
 </section>
 
-<!-- ── PROJECTS ── -->
 <section id="projects">
   <p class="section-label reveal">projetos</p>
   <h2 class="section-title reveal">O que estou construindo</h2>
   <div class="section-divider reveal"></div>
   <div class="projects-grid">
 
-    <!-- PROJECT 1 -->
     <div class="project-card reveal">
       <div class="project-header">
         <span class="project-num">projeto_001</span>
+        <span class="project-status status-done">Concluído</span>
+      </div>
+      <div class="project-body">
+        <h3 class="project-title">Totem Inteligente Interativo (IoT + IA)</h3>
+        <p class="project-desc">Sistema interativo ponta a ponta com visão computacional, LLMs generativas e sensores IoT. O "cérebro" do totem analisa sentimentos, agrupa perfis (personas) e responde via chat e voz.</p>
+        <div class="project-meta">
+          <div class="meta-row">
+            <span class="meta-key">Papel</span>
+            <span class="meta-val">Backend & AI Engineer (Equipe de 3 desenvolvedores)</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Arquitetura</span>
+            <span class="meta-val">FastAPI servindo endpoints assíncronos para processar telemetria, rotas de visão (YOLOv8) e chat interativo. Dados armazenados em PostgreSQL e visualizados em Streamlit.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Pipeline IA</span>
+            <span class="meta-val">Classificação via Random Forest, clusterização de personas via K-Means e Análise de Sentimentos para injetar um contexto dinâmico no prompt do GPT-4o-mini.</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">Stack</span>
+            <span class="meta-val">
+              <div class="metric-pills">
+                <span class="metric-pill">Python</span>
+                <span class="metric-pill">FastAPI</span>
+                <span class="metric-pill">GPT-4o-mini</span>
+                <span class="metric-pill">YOLOv8</span>
+                <span class="metric-pill">Scikit-Learn</span>
+                <span class="metric-pill">PostgreSQL</span>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="project-links">
+          <a href="#" class="link-btn link-btn-code">↗ GitHub</a>
+          <a href="https://youtu.be/7AlEi7odo8A" target="_blank" class="link-btn link-btn-demo">▶ Ver Demo (Sprint 4)</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-header">
+        <span class="project-num">projeto_002</span>
         <span class="project-status status-wip">Em andamento</span>
       </div>
       <div class="project-body">
@@ -687,47 +722,6 @@
       </div>
     </div>
 
-    <!-- PROJECT 2 -->
-    <div class="project-card reveal">
-      <div class="project-header">
-        <span class="project-num">projeto_002</span>
-        <span class="project-status status-done">Concluído</span>
-      </div>
-      <div class="project-body">
-        <h3 class="project-title">Classificador de Sentimentos para E-commerce</h3>
-        <p class="project-desc">Pipeline de NLP para análise de sentimentos em avaliações de produtos com fine-tuning de BERT em português.</p>
-        <div class="project-meta">
-          <div class="meta-row">
-            <span class="meta-key">Problema</span>
-            <span class="meta-val">Empresa precisava monitorar satisfação de clientes em escala a partir de reviews textuais.</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-key">Dados</span>
-            <span class="meta-val">50k reviews do Mercado Livre. Balanceamento de classes com oversampling + limpeza com regex e spaCy.</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-key">Abordagem</span>
-            <span class="meta-val">Fine-tuning do BERTimbau (BERT-pt) com 3 epochs, lr=2e-5. Comparado com TF-IDF + SVM como baseline.</span>
-          </div>
-          <div class="meta-row">
-            <span class="meta-key">Métricas</span>
-            <span class="meta-val">
-              <div class="metric-pills">
-                <span class="metric-pill">F1: 0.923</span>
-                <span class="metric-pill">Accuracy: 94.1%</span>
-                <span class="metric-pill">+12% vs baseline</span>
-              </div>
-            </span>
-          </div>
-        </div>
-        <div class="project-links">
-          <a href="#" class="link-btn link-btn-code">↗ GitHub</a>
-          <a href="#" class="link-btn link-btn-demo">▶ Demo (Gradio)</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROJECT 3 — Template -->
     <div class="project-card reveal" style="border-style:dashed;opacity:.6">
       <div class="project-header">
         <span class="project-num">projeto_003</span>
@@ -748,7 +742,6 @@
   </div>
 </section>
 
-<!-- ── ARTICLES ── -->
 <section id="articles">
   <p class="section-label reveal">artigos & blog</p>
   <h2 class="section-title reveal">Escrevendo para aprender</h2>
@@ -823,52 +816,47 @@
   </div>
 </section>
 
-<!-- ── VIDEOS ── -->
 <section id="videos">
   <p class="section-label reveal">canal youtube</p>
-  <h2 class="section-title reveal">Vídeos & Aulas</h2>
+  <h2 class="section-title reveal">Vídeos & Demos</h2>
   <div class="section-divider reveal"></div>
   <p class="video-intro reveal">
-    Cole o ID de um vídeo não-listado do YouTube para embedar aqui. O ID está na URL depois de <code style="color:var(--accent2)">?v=</code>.
-    Exemplo: youtube.com/watch?v=<strong style="color:var(--accent)">dQw4w9WgXcQ</strong>
+    Mão na massa em vídeo. Abaixo algumas demonstrações de projetos de inteligência artificial rodando em tempo real.
   </p>
   <div class="video-grid" id="videoGrid">
 
-    <!-- Video 1: substitua VIDEO_ID_AQUI pelo ID real -->
     <div class="video-card reveal">
       <div class="video-embed-wrap">
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_AQUI?rel=0&modestbranding=1"
-          title="Título do Vídeo 1"
+          src="https://www.youtube.com/embed/7AlEi7odo8A?rel=0&modestbranding=1"
+          title="Demo: Totem Inteligente (Entrega Final)"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
       </div>
       <div class="video-info">
-        <p class="video-title">Título do Vídeo 1</p>
-        <p class="video-desc-small">Substitua VIDEO_ID_AQUI pelo ID real do seu vídeo não-listado</p>
+        <p class="video-title">Totem Inteligente - Demo Final</p>
+        <p class="video-desc-small">Testando a integração completa de Visão Computacional, LLMs e UI em tempo real.</p>
       </div>
     </div>
 
-    <!-- Video 2 -->
     <div class="video-card reveal">
       <div class="video-embed-wrap">
         <iframe
-          src="https://www.youtube.com/embed/VIDEO_ID_2?rel=0&modestbranding=1"
-          title="Título do Vídeo 2"
+          src="https://www.youtube.com/embed/quWk0Pxb6cU?rel=0&modestbranding=1"
+          title="Demo: Totem Inteligente - Arquitetura"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
         ></iframe>
       </div>
       <div class="video-info">
-        <p class="video-title">Título do Vídeo 2</p>
-        <p class="video-desc-small">Aula ou apresentação de projeto</p>
+        <p class="video-title">Totem Inteligente - Visão & Back-end</p>
+        <p class="video-desc-small">Mergulho profundo na construção da API e funcionamento da telemetria de IoT.</p>
       </div>
     </div>
 
-    <!-- Add Video Card -->
     <div class="add-video-card reveal" id="addVideoCard">
-      <p class="add-video-form-label">+ Adicionar vídeo não-listado</p>
+      <p class="add-video-form-label">+ Adicionar novo vídeo</p>
       <div class="add-video-form">
         <input type="text" id="videoId" placeholder="ID do vídeo (ex: dQw4w9WgXcQ)" />
         <input type="text" id="videoTitle" placeholder="Título do vídeo" />
@@ -880,7 +868,6 @@
   </div>
 </section>
 
-<!-- ── CONTACT ── -->
 <section id="contact">
   <p class="section-label reveal">contato</p>
   <h2 class="section-title reveal">Vamos conversar</h2>
@@ -929,15 +916,12 @@
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
 <footer>
   <span>// <span style="color:var(--accent)">dev.portfolio</span> — construído com HTML puro & obsessão por detalhes</span>
   <span style="color:var(--txt-dim)">MIT License · <span id="year"></span></span>
 </footer>
 
-</div><!-- /wrapper -->
-
-<script>
+</div><script>
 /* ── CURSOR ── */
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
